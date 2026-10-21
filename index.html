@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>Kalkulator Trading Saham Indonesia</title>
+<style>
+:root{--bg:#0b1220;--panel:#121c2e;--panel2:#18243a;--line:#2b3a52;--text:#edf3fc;--muted:#9eacc2;--green:#35d39a;--red:#ff6b7a;--blue:#7eb4ff;--yellow:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#0b1220,#111b2d 65%,#0d1726);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:22px 16px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:clamp(23px,4vw,34px);line-height:1.15;margin:0 0 7px}.sub{color:var(--muted);margin:0}.pill{border:1px solid #35506e;color:#bcd7ff;padding:6px 10px;border-radius:99px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}.card{background:rgba(18,28,46,.96);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}.span8{grid-column:span 8}.span4{grid-column:span 4}.span12{grid-column:span 12}.span6{grid-column:span 6}
+h2{font-size:17px;margin:0 0 14px}h3{font-size:14px;color:var(--muted);font-weight:600;margin:18px 0 8px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;color:var(--muted);font-size:12px;margin:0 0 5px}.field input,.field select{width:100%;border:1px solid #34445e;background:#0c1524;color:var(--text);border-radius:9px;padding:11px 10px;font:inherit;min-width:0;outline:none}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 2px #7eb4ff20}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn{border:1px solid #3b5273;background:#1d3150;color:var(--text);padding:10px 13px;border-radius:10px;font:inherit;cursor:pointer}.btn.primary{background:#2369c8;border-color:#3985e8}.btn.ghost{background:transparent}.btn:hover{filter:brightness(1.12)}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:var(--panel2);border:1px solid #2c3b53;border-radius:12px;padding:13px}.metric .k{font-size:12px;color:var(--muted);margin-bottom:4px}.metric .v{font-size:clamp(17px,2.5vw,23px);font-weight:750;overflow-wrap:anywhere}.positive{color:var(--green)!important}.negative{color:var(--red)!important}.neutral{color:var(--blue)!important}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 7px;text-align:right;border-bottom:1px solid #29384f;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600}tfoot td{font-weight:750;border-bottom:0}.table-wrap{overflow:auto}
+.note{font-size:12px;color:var(--muted);margin:10px 0 0}.warn{border:1px solid #765c28;background:#3a2e16;color:#ffe1a0;padding:11px 13px;border-radius:10px;font-size:12px;margin-top:12px}
+details summary{cursor:pointer;color:var(--blue);font-weight:650;margin-bottom:14px}.settings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.small{font-size:12px;color:var(--muted)}.divider{border:0;border-top:1px solid var(--line);margin:16px 0}.tag{font-size:11px;border:1px solid #344a68;border-radius:6px;padding:3px 6px;color:#c1d7f7}
+footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:760px){.span8,.span4,.span6{grid-column:span 12}.settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:15px}.wrap{padding:17px 11px 35px}}
+@media(max-width:390px){.fields,.metrics{grid-template-columns:1fr}.settings-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div><h1>Trading Saham Indonesia</h1><p class="sub">Kalkulator biaya, break-even, target profit, dan risiko — fokus pada harga saham.</p></div>
+    <span class="pill">BEI · Lot = 100 saham</span>
+  </header>
+  <div class="grid">
+    <section class="card span8">
+      <h2>01 · Input transaksi</h2>
+      <div class="fields">
+        <div class="field"><label for="ticker">Kode saham</label><input id="ticker" placeholder="Contoh: BBRI" maxlength="10"></div>
+        <div class="field"><label for="lots">Jumlah lot</label><input id="lots" type="number" min="1" step="1" value="5"></div>
+        <div class="field"><label for="buy">Harga beli per saham (Rp)</label><input id="buy" type="number" min="1" step="1" value="2460"></div>
+        <div class="field"><label for="sell">Harga jual / target (Rp)</label><input id="sell" type="number" min="1" step="1" value="2600"></div>
+        <div class="field"><label for="stop">Stop-loss (Rp, opsional)</label><input id="stop" type="number" min="0" step="1" placeholder="Contoh: 2380"></div>
+        <div class="field"><label for="targetPct">Target profit bersih (%)</label><input id="targetPct" type="number" min="0" step="0.1" value="3"></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="calc">Hitung</button>
+        <button class="btn" id="save">Simpan setup</button>
+        <button class="btn ghost" id="reset">Reset contoh</button>
+      </div>
+      <p class="note">Perhitungan memakai harga per saham dan lot standar BEI (1 lot = 100 saham). Pastikan jumlah lot dan harga sesuai order Anda.</p>
+    </section>
+    <section class="card span4">
+      <h2>Ringkasan hasil</h2>
+      <div class="metrics">
+        <div class="metric"><div class="k">Modal beli + biaya</div><div class="v" id="capital">—</div></div>
+        <div class="metric"><div class="k">Hasil jual bersih</div><div class="v" id="netSell">—</div></div>
+        <div class="metric"><div class="k">Laba / rugi bersih</div><div class="v" id="pnl">—</div></div>
+        <div class="metric"><div class="k">Return bersih</div><div class="v" id="roi">—</div></div>
+        <div class="metric"><div class="k">Break-even jual</div><div class="v" id="be">—</div></div>
+        <div class="metric"><div class="k">Target harga bersih</div><div class="v" id="targetPrice">—</div></div>
+      </div>
+      <p class="note" id="summary">Ubah harga untuk menghitung hasil secara otomatis.</p>
+    </section>
+    <section class="card span6">
+      <h2>02 · Rincian biaya transaksi</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Komponen</th><th>Beli</th><th>Jual</th></tr></thead>
+          <tbody id="feeRows"></tbody>
+          <tfoot><tr><td>Total biaya</td><td id="buyFeeTotal">—</td><td id="sellFeeTotal">—</td></tr></tfoot>
+        </table>
+      </div>
+      <p class="note">Biaya dihitung dari nilai bruto transaksi. Pajak penjualan saham ditampilkan terpisah dari biaya broker.</p>
+    </section>
+    <section class="card span6">
+      <h2>03 · Simulasi harga</h2>
+      <div class="table-wrap"><table><thead><tr><th>Perubahan harga</th><th>Harga jual</th><th>Laba / rugi bersih</th><th>Return</th></tr></thead><tbody id="scenarios"></tbody></table></div>
+      <p class="note">Simulasi mengasumsikan jumlah saham tetap dan biaya sesuai pengaturan di bawah.</p>
+    </section>
+    <section class="card span12">
+      <details open>
+        <summary>Pengaturan biaya — bisa Anda ubah sesuai tarif sekuritas</summary>
+        <div class="warn">Tarif awal di bawah adalah estimasi untuk simulasi, bukan jaminan tarif IPOT saat ini. Cocokkan dengan Trade Confirmation terbaru Anda. Biaya bursa/kliring dan perlakuan PPN dapat berubah.</div>
+        <h3>Tarif berdasarkan nilai transaksi (%)</h3>
+        <div class="settings-grid">
+          <div class="field"><label for="buyBroker">Broker fee beli (%)</label><input id="buyBroker" type="number" min="0" step="0.001" value="0.190"></div>
+          <div class="field"><label for="sellBroker">Broker fee jual (%)</label><input id="sellBroker" type="number" min="0" step="0.001" value="0.190"></div>
+          <div class="field"><label for="levy">Levy bursa (%)</label><input id="levy" type="number" min="0" step="0.001" value="0.030"></div>
+          <div class="field"><label for="kpei">KPEI / kliring (%)</label><input id="kpei" type="number" min="0" step="0.001" value="0.010"></div>
+          <div class="field"><label for="vat">PPN atas biaya (%)</label><input id="vat" type="number" min="0" step="0.1" value="12"></div>
+          <div class="field"><label for="sellTax">PPh final penjualan (%)</label><input id="sellTax" type="number" min="0" step="0.01" value="0.100"></div>
+        </div>
+        <h3>PPN dihitung dari komponen biaya</h3>
+        <div class="fields">
+          <div class="field"><label for="vatBase">Dasar PPN</label><select id="vatBase"><option value="broker">Broker fee saja</option><option value="brokerLevy">Broker fee + levy + KPEI</option></select></div>
+          <div class="field"><label for="rounding">Pembulatan biaya</label><select id="rounding"><option value="ceil">Dibulatkan ke atas per komponen</option><option value="round">Pembulatan normal per komponen</option></select></div>
+        </div>
+        <p class="note">Catatan: tarif broker berbeda antar sekuritas dan jenis layanan. PPh final penjualan saham umumnya 0,1% dari nilai bruto jual; bukan 0,1% dari laba.</p>
+      </details>
+    </section>
+  </div>
+  <footer>Alat bantu perhitungan, bukan rekomendasi beli/jual. Tidak mengambil harga BEI secara live dan tidak mengirim order. Data setup disimpan di browser perangkat ini saja.</footer>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number.isFinite(n) ? new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.round(n)) : '—';
+const num = id => Math.max(0, Number($(id).value)||0);
+const pct = n => (n*100).toLocaleString('id-ID',{maximumFractionDigits:2,minimumFractionDigits:2})+'%';
+function roundFee(n){return $('rounding').value==='ceil'?Math.ceil(n):Math.round(n)}
+function calcFees(gross,side){
+  const brokerRate=num(side==='buy'?'buyBroker':'sellBroker')/100;
+  const broker=roundFee(gross*brokerRate);
+  const levy=roundFee(gross*num('levy')/100);
+  const kpei=roundFee(gross*num('kpei')/100);
+  const vatBase=$('vatBase').value==='broker'?broker:broker+levy+kpei;
+  const vat=roundFee(vatBase*num('vat')/100);
+  const tax=side==='sell'?roundFee(gross*num('sellTax')/100):0;
+  return {broker,levy,kpei,vat,tax,total:broker+levy+kpei+vat+tax};
+}
+function shareCount(){return Math.floor(num('lots'))*100}
+function calculate(){
+ const shares=shareCount(),buy=num('buy'),sell=num('sell'),stop=num('stop');
+ const buyGross=shares*buy,sellGross=shares*sell;
+ const bf=calcFees(buyGross,'buy'),sf=calcFees(sellGross,'sell');
+ const capital=buyGross+bf.total,netSell=sellGross-sf.total,pnl=netSell-capital,roi=capital?pnl/capital:0;
+ $('capital').textContent=fmt(capital);$('netSell').textContent=fmt(netSell);$('pnl').textContent=fmt(pnl);$('pnl').className='v '+(pnl>=0?'positive':'negative');$('roi').textContent=pct(roi);$('roi').className='v '+(pnl>=0?'positive':'negative');
+ let be=buy;
+ if(shares>0&&buy>0){let lo=buy,hi=Math.max(buy*3,buy+1000);for(let i=0;i<50;i++){let mid=(lo+hi)/2;let g=shares*mid;let f=calcFees(g,'sell');if(g-f.total>=capital)hi=mid;else lo=mid;}be=Math.ceil(hi)}
+ $('be').textContent=fmt(be);
+ const target=num('targetPct')/100,desired=capital*(1+target);let lo=buy,hi=Math.max(buy*4,buy+5000);
+ for(let i=0;i<50;i++){let mid=(lo+hi)/2,g=shares*mid,f=calcFees(g,'sell');if(g-f.total>=desired)hi=mid;else lo=mid}
+ $('targetPrice').textContent=shares?fmt(Math.ceil(hi)):'—';
+ $('summary').textContent=shares?`${$('ticker').value.trim().toUpperCase()||'Saham'} · ${shares.toLocaleString('id-ID')} saham · total biaya beli ${fmt(bf.total)} dan biaya jual pada harga input ${fmt(sf.total)}.`:'Masukkan jumlah lot dan harga yang valid.';
+ $('feeRows').innerHTML=[
+ ['Broker fee',bf.broker,sf.broker],['Levy bursa',bf.levy,sf.levy],['KPEI / kliring',bf.kpei,sf.kpei],['PPN atas biaya',bf.vat,sf.vat],['PPh final jual',bf.tax,sf.tax],['Nilai bruto',buyGross,sellGross]
+ ].map((r,i)=>`<tr><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td></tr>`).join('');
+ $('buyFeeTotal').textContent=fmt(bf.total);$('sellFeeTotal').textContent=fmt(sf.total);
+ $('scenarios').innerHTML=[-10,-5,-3,-2,-1,0,1,2,3,5,10].map(change=>{
+   const price=Math.max(1,buy*(1+change/100)),gross=shares*price,fees=calcFees(gross,'sell'),net=gross-fees.total,profit=net-capital,ret=capital?profit/capital:0;
+   return `<tr><td>${change>0?'+':''}${change}%</td><td>${fmt(price)}</td><td class="${profit>=0?'positive':'negative'}">${fmt(profit)}</td><td class="${profit>=0?'positive':'negative'}">${pct(ret)}</td></tr>`;
+ }).join('');
+ if(stop>0){const g=shares*stop,loss=g-calcFees(g,'sell').total-capital;$('summary').textContent+=` Estimasi jika stop-loss ${fmt(stop)}: ${fmt(loss)} bersih.`}
+}
+const inputIds=['ticker','lots','buy','sell','stop','targetPct','buyBroker','sellBroker','levy','kpei','vat','sellTax','vatBase','rounding'];
+inputIds.forEach(id=>$(id).addEventListener('input',calculate));
+$('calc').addEventListener('click',calculate);
+$('save').addEventListener('click',()=>{const data={};inputIds.forEach(id=>data[id]=$(id).value);try{localStorage.setItem('tradingSahamIndonesiaSetup',JSON.stringify(data));$('save').textContent='Tersimpan ✓';setTimeout(()=>$('save').textContent='Simpan setup',1600)}catch(e){alert('Browser tidak mengizinkan penyimpanan. Anda tetap bisa memakai kalkulator ini.') }});
+try{const data=JSON.parse(localStorage.getItem('tradingSahamIndonesiaSetup')||'null');if(data)Object.keys(data).forEach(id=>{if($(id))$(id).value=data[id]})}catch(e){}
+$('reset').addEventListener('click',()=>{const defaults={ticker:'',lots:5,buy:2460,sell:2600,stop:'',targetPct:3,buyBroker:0.190,sellBroker:0.190,levy:0.030,kpei:0.010,vat:12,sellTax:0.100,vatBase:'broker',rounding:'ceil'};Object.keys(defaults).forEach(id=>$(id).value=defaults[id]);calculate()});
+calculate();
+</script>
+</body>
+</html>
